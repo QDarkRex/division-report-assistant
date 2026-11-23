@@ -1,0 +1,1 @@
+ALTER TABLE "llm_invocations" ADD COLUMN "failure_reason" text;

@@ -1,0 +1,14 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Never commit these. The bot runs against a real WhatsApp group and a real
+# spreadsheet; anything below is either a credential or a live session that
+# would let the holder act as the bot.
+.env
+.env.*
+!.env.example
+*.pem
+*-service-account.json
+baileys-session/
+auth_info*/

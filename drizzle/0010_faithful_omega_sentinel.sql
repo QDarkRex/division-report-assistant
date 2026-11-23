@@ -1,0 +1,1 @@
+ALTER TABLE "tasks_sheet_snapshot" ADD COLUMN "scheduled_text" text DEFAULT '' NOT NULL;

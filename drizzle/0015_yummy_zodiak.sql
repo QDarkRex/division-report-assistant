@@ -1,0 +1,1 @@
+ALTER TABLE "pending_confirmations" ADD COLUMN "kind" text DEFAULT 'query' NOT NULL;

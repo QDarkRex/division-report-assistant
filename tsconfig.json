@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2023"],
+    "outDir": "dist",
+    "rootDir": "src",
+    "strict": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "esModuleInterop": true,
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": false,
+    "sourceMap": true
+  },
+  "include": ["src/**/*.ts"],
+  // Tests are excluded from the BUILD (they must not land in dist/), but a
+  // separate tsconfig.test.json type-checks them — found 2026-08-29 that a
+  // field rename left four test files referencing a property that no longer
+  // existed and `npm run typecheck` stayed green, because this exclusion hid
+  // them from tsc entirely. Type errors in tests were only ever caught by
+  // running them.
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
+}

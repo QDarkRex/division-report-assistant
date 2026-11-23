@@ -1,0 +1,3 @@
+ALTER TABLE "member_availability" ADD COLUMN "cancelled_at" timestamp with time zone;--> statement-breakpoint
+ALTER TABLE "member_availability" ADD COLUMN "cancelled_by_member_id" uuid;--> statement-breakpoint
+ALTER TABLE "member_availability" ADD CONSTRAINT "member_availability_cancelled_by_member_id_members_member_id_fk" FOREIGN KEY ("cancelled_by_member_id") REFERENCES "public"."members"("member_id") ON DELETE no action ON UPDATE no action;

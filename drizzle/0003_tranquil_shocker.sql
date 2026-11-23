@@ -1,0 +1,2 @@
+CREATE TYPE "public"."obstacle_category" AS ENUM('none', 'waiting_material', 'waiting_component', 'waiting_information', 'technical_issue', 'software_issue', 'hardware_issue', 'dependency', 'resource_unavailable', 'needs_decision', 'other');--> statement-breakpoint
+ALTER TABLE "report_items" ADD COLUMN "obstacle_category" "obstacle_category";

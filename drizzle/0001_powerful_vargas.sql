@@ -1,0 +1,1 @@
+ALTER TABLE "tasks" ADD COLUMN "admin_note" text;

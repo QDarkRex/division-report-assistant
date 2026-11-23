@@ -1,0 +1,74 @@
+name: division-report-assistant
+
+# Joins two pre-existing external Docker networks: one shared with
+# PostgreSQL and the LiteLLM gateway (reached by DNS name `postgres` and
+# `gateway`), one for the monitoring stack's health checks.
+
+networks:
+  app-data:
+    external: true
+  monitoring:
+    external: true
+
+services:
+  division-report-assistant:
+    image: ${WDH_IMAGE:?set WDH_IMAGE to a commit-tagged image}
+    build: .
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - app-data
+      - monitoring
+    env_file:
+      - /opt/app/secrets/division-report-assistant/env
+    environment:
+      NODE_ENV: production
+      PORT: "8000"
+      TZ: Asia/Jakarta
+      LITELLM_BASE_URL: http://gateway:4000
+      WHATSAPP_AUTH_FOLDER: /opt/app/data/division-report-assistant/baileys-session
+      WHATSAPP_GROUP_JID: ${WDH_GROUP_JID:?set WDH_GROUP_JID to the target group's JID (…@g.us)}
+      # Two-way Sheets sync (MASTER_SPEC.md §18) — optional in config/env.ts,
+      # but this deploy has a verified service account key, so wire it in.
+      # File must be chowned to UID 10004 on the host (matches this
+      # container's non-root user) — read_only root fs + no sudo inside the
+      # container means it can't fix permissions itself.
+      SHEETS_CREDENTIALS_PATH: /run/secrets/sheets-service-account.json
+      SHEETS_SPREADSHEET_ID: ${WDH_SHEETS_SPREADSHEET_ID:?set WDH_SHEETS_SPREADSHEET_ID for two-way TASKS sync}
+      # Master Plan sync (src/plan/) — optional. Empty or unset = plan sync is
+      # off (config/env.ts reads an empty string as unset). Read-only: the
+      # service account only needs viewer access to that spreadsheet.
+      PLAN_SPREADSHEET_ID: ${WDH_PLAN_SPREADSHEET_ID:-}
+    volumes:
+      - wdh-data:/opt/app/data/division-report-assistant
+      - /opt/app/secrets/division-report-assistant/google-sheets-service-account.json:/run/secrets/sheets-service-account.json:ro
+    ports:
+      - "127.0.0.1:8020:8000"
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=16m
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8000/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    stop_grace_period: 15s
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+    pids_limit: 256
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: "3"
+
+volumes:
+  wdh-data:
+    external: true
+    name: division-report-assistant_wdh-data

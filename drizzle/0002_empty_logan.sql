@@ -1,0 +1,2 @@
+CREATE UNIQUE INDEX "daily_summaries_summary_day_idx" ON "daily_summaries" USING btree ("summary_day");--> statement-breakpoint
+CREATE UNIQUE INDEX "weekly_summaries_week_start_idx" ON "weekly_summaries" USING btree ("week_start");
